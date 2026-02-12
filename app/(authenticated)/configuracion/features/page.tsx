@@ -210,7 +210,7 @@ export default function FeaturesPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -226,7 +226,7 @@ export default function FeaturesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -245,7 +245,7 @@ export default function FeaturesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -261,7 +261,7 @@ export default function FeaturesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -295,7 +295,7 @@ export default function FeaturesPage() {
                 {categoryFeatures.map((feature) => (
                   <div
                     key={feature.id}
-                    className="p-4 border rounded-lg"
+                    className="p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
