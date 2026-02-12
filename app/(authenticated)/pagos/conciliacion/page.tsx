@@ -128,24 +128,27 @@ export default function ConciliacionPage() {
     toast.success(`Discrepancia ${id} marcada como resuelta`)
   }
 
+  const handleInvestigate = (record: ReconciliationRecord) => {
+    toast.info("🔍 Investigación iniciada", {
+      description: `Se está investigando el registro ${record.id} de ${record.vendorName}`,
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <FileCheck className="h-8 w-8" style={{ color: "#0095A9" }} />
-          <h1 className="text-3xl font-bold text-gray-900">
-            Conciliación Bancaria
-          </h1>
-        </div>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Conciliación Bancaria
+        </h1>
+        <p className="text-gray-600 mt-1">
           Compara y reconcilia pagos del sistema con extractos bancarios
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -164,7 +167,7 @@ export default function ConciliacionPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -183,7 +186,7 @@ export default function ConciliacionPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -202,7 +205,7 @@ export default function ConciliacionPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -231,37 +234,42 @@ export default function ConciliacionPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-end gap-4">
-              <div className="flex-1">
-                <Label htmlFor="month">Período de Conciliación</Label>
-                <Input
-                  id="month"
-                  type="month"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <Button variant="outline" onClick={handleImportBankStatement}>
+          <div className="flex flex-wrap gap-4">
+            <div className="space-y-2 w-full sm:w-64">
+              <Label htmlFor="month">Período de Conciliación</Label>
+              <Input
+                id="month"
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="h-10"
+              />
+            </div>
+            <div className="space-y-2 w-full sm:w-64">
+              <Label>Estado de Cuenta</Label>
+              <Button 
+                variant="outline" 
+                onClick={handleImportBankStatement}
+                className="w-full justify-start h-10"
+              >
                 <Upload className="h-4 w-4 mr-2" />
-                Importar Estado de Cuenta
-              </Button>
-              <Button onClick={handleRunReconciliation} style={{ backgroundColor: "#0095A9" }}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Ejecutar Conciliación
+                Importar Archivo
               </Button>
             </div>
+          </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Exportar Reporte
-              </Button>
-              <Button variant="outline" size="sm">
-                Ver Historial
-              </Button>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Button onClick={handleRunReconciliation} style={{ backgroundColor: "#0095A9" }}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Ejecutar Conciliación
+            </Button>
+            <Button variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar Reporte
+            </Button>
+            <Button variant="outline">
+              Ver Historial
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -333,7 +341,7 @@ export default function ConciliacionPage() {
             {reconciliationRecords.map((record) => (
               <div
                 key={record.id}
-                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors shadow-sm"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -352,7 +360,11 @@ export default function ConciliacionPage() {
                       <div>
                         <p className="text-xs text-gray-600">Fecha</p>
                         <p className="font-medium text-gray-900">
-                          {new Date(record.date).toLocaleDateString("es-DO")}
+                          {new Date(record.date).toLocaleDateString("es-DO", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </p>
                       </div>
                       <div>
@@ -383,7 +395,11 @@ export default function ConciliacionPage() {
                     {record.status === "matched" ? (
                       <CheckCircle className="h-8 w-8 text-green-600" />
                     ) : record.status === "unmatched" ? (
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleInvestigate(record)}
+                      >
                         Investigar
                       </Button>
                     ) : record.status === "discrepancy" ? (
