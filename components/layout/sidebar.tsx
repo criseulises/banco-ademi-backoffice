@@ -44,10 +44,10 @@ export function Sidebar() {
       icon: <Users size={24} />,
       label: "Usuarios",
       subItems: [
+        { label: "Personal Backoffice", href: "/usuarios" },
         { label: "Clientes", href: "/usuarios/clientes" },
         { label: "Onboarding", href: "/usuarios/onboarding" },
-        { label: "Personal", href: "/usuarios/personal" },
-        { label: "Roles", href: "/usuarios/roles" },
+        { label: "Roles y Permisos", href: "/usuarios/roles" },
       ],
     },
     {
@@ -64,10 +64,10 @@ export function Sidebar() {
       icon: <ArrowLeftRight size={24} />,
       label: "Transacciones",
       subItems: [
-        { label: "Monitoreo", href: "/transacciones/monitoreo" },
-        { label: "Pendientes", href: "/transacciones/pendientes" },
-        { label: "Límites", href: "/transacciones/limites" },
-        { label: "Historial", href: "/transacciones/historial" },
+        { label: "Todas las Transacciones", href: "/transacciones" },
+        { label: "Pendientes de Aprobación", href: "/transacciones/pendientes" },
+        { label: "Fallidas y Canceladas", href: "/transacciones/fallidas" },
+        { label: "Configurar Límites", href: "/transacciones/limites" },
       ],
     },
     {
@@ -83,9 +83,9 @@ export function Sidebar() {
       icon: <Shield size={24} />,
       label: "Cumplimiento",
       subItems: [
-        { label: "AML", href: "/cumplimiento/aml" },
-        { label: "KYC", href: "/cumplimiento/kyc" },
-        { label: "Fraude", href: "/cumplimiento/fraude" },
+        { label: "Verificaciones KYC/AML", href: "/cumplimiento" },
+        { label: "Centro de Alertas", href: "/alertas" },
+        { label: "Prevención de Fraude", href: "/cumplimiento/fraude" },
       ],
     },
     {
