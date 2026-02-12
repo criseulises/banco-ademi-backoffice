@@ -199,7 +199,6 @@ export default function FeaturesPage() {
       {/* Page Header */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <Flag className="h-8 w-8" style={{ color: "#0095A9" }} />
           <h1 className="text-3xl font-bold text-gray-900">
             Feature Flags
           </h1>
