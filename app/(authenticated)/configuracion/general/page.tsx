@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Settings, Building2, Mail, Phone, MapPin, Globe, Save, RefreshCw } from "lucide-react"
+import { Mail, Phone, MapPin, Globe, Save, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -82,32 +82,22 @@ export default function ConfiguracionGeneralPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Page Title */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Settings className="h-8 w-8" style={{ color: "#0095A9" }} />
-          <h1 className="text-3xl font-bold text-gray-900">
-            Configuración General
-          </h1>
-        </div>
-        <p className="text-gray-600">
-          Configuración general del sistema y de la empresa
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">Configuración General</h1>
+        <p className="text-gray-600 mt-1">Configuración general del sistema y de la empresa</p>
       </div>
 
       {/* Company Information */}
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" style={{ color: "#0095A9" }} />
-            <CardTitle>Información de la Empresa</CardTitle>
-          </div>
+          <CardTitle>Información de la Empresa</CardTitle>
           <CardDescription>
             Datos corporativos y de contacto
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             <div>
               <Label htmlFor="companyName">Nombre Comercial</Label>
               <Input
@@ -217,7 +207,7 @@ export default function ConfiguracionGeneralPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             <div>
               <Label htmlFor="timezone">Zona Horaria</Label>
               <Select value={config.timezone} onValueChange={(value) => updateConfig("timezone", value)}>
@@ -282,8 +272,8 @@ export default function ConfiguracionGeneralPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
               <div>
                 <Label htmlFor="businessHoursStart">Hora de Inicio</Label>
                 <Input
@@ -306,10 +296,10 @@ export default function ConfiguracionGeneralPage() {
               </div>
             </div>
             <div>
-              <Label className="mb-2 block">Días Laborables</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Label className="mb-3 block font-medium">Días Laborables</Label>
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
                 {workingDays.map((day) => (
-                  <div key={day.value} className="flex items-center space-x-2 p-2 border rounded">
+                  <div key={day.value} className="flex items-center space-x-2 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
                     <input
                       type="checkbox"
                       id={day.value}
@@ -322,7 +312,7 @@ export default function ConfiguracionGeneralPage() {
                       }}
                       className="rounded"
                     />
-                    <label htmlFor={day.value} className="text-sm cursor-pointer">
+                    <label htmlFor={day.value} className="text-sm cursor-pointer flex-1">
                       {day.label}
                     </label>
                   </div>
@@ -343,7 +333,7 @@ export default function ConfiguracionGeneralPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div>
                 <Label htmlFor="emailNotifications" className="font-medium">
                   Notificaciones por Email
@@ -358,7 +348,7 @@ export default function ConfiguracionGeneralPage() {
                 onCheckedChange={(checked) => updateConfig("emailNotifications", checked)}
               />
             </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div>
                 <Label htmlFor="smsNotifications" className="font-medium">
                   Notificaciones por SMS
@@ -373,7 +363,7 @@ export default function ConfiguracionGeneralPage() {
                 onCheckedChange={(checked) => updateConfig("smsNotifications", checked)}
               />
             </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div>
                 <Label htmlFor="pushNotifications" className="font-medium">
                   Notificaciones Push
@@ -401,8 +391,8 @@ export default function ConfiguracionGeneralPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               <div>
                 <Label htmlFor="sessionTimeout">Tiempo de Sesión (minutos)</Label>
                 <Input
@@ -434,7 +424,7 @@ export default function ConfiguracionGeneralPage() {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div>
                 <Label htmlFor="require2FA" className="font-medium">
                   Requerir Autenticación de Dos Factores
@@ -454,25 +444,21 @@ export default function ConfiguracionGeneralPage() {
       </Card>
 
       {/* Action Buttons */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={handleReset}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Restablecer
-            </Button>
-            <div className="flex gap-3">
-              <Button variant="outline">
-                Cancelar
-              </Button>
-              <Button onClick={handleSave} style={{ backgroundColor: "#0095A9" }}>
-                <Save className="h-4 w-4 mr-2" />
-                Guardar Cambios
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-between pt-2">
+        <Button variant="outline" onClick={handleReset}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Restablecer
+        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} style={{ backgroundColor: "#0095A9" }}>
+            <Save className="h-4 w-4 mr-2" />
+            Guardar Cambios
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
