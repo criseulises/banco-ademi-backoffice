@@ -1,12 +1,28 @@
 "use client"
 
-import { Plug, CheckCircle, XCircle, Settings, Key, RefreshCw, Plus } from "lucide-react"
+import { useState } from "react"
+import { Plug, CheckCircle, XCircle, Settings, Key, RefreshCw, Plus, Copy, Eye, EyeOff } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 
 interface Integration {
@@ -24,7 +40,7 @@ interface Integration {
 }
 
 export default function IntegracionesPage() {
-  const integrations: Integration[] = [
+  const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: "visa",
       name: "Visa",
@@ -33,7 +49,7 @@ export default function IntegracionesPage() {
       status: "active",
       enabled: true,
       logo: "💳",
-      apiKey: "pk_live_****************************",
+      apiKey: "pk_live_51J3x4yH8n2K5m6p7q8r9s0t",
       lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     },
     {
@@ -44,7 +60,7 @@ export default function IntegracionesPage() {
       status: "active",
       enabled: true,
       logo: "💳",
-      apiKey: "pk_live_****************************",
+      apiKey: "pk_live_61K4z5zI9o3L6n7q8r9s0t1u",
       lastSync: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     },
     {
@@ -55,7 +71,7 @@ export default function IntegracionesPage() {
       status: "active",
       enabled: true,
       logo: "☁️",
-      apiKey: "AKIA****************************",
+      apiKey: "AKIAIOSFODNN7EXAMPLE1234567890",
       lastSync: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
     },
     {
@@ -66,7 +82,7 @@ export default function IntegracionesPage() {
       status: "active",
       enabled: true,
       logo: "📱",
-      apiKey: "AC****************************",
+      apiKey: "AC1234567890abcdef1234567890abcd",
       lastSync: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
     },
     {
@@ -77,7 +93,7 @@ export default function IntegracionesPage() {
       status: "active",
       enabled: true,
       logo: "✉️",
-      apiKey: "SG.****************************",
+      apiKey: "SG.1234567890abcdef.1234567890abcdef",
       lastSync: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     },
     {
@@ -106,15 +122,99 @@ export default function IntegracionesPage() {
       status: "error",
       enabled: true,
       logo: "📝",
-      apiKey: "ds_****************************",
+      apiKey: "ds_1234567890abcdef1234567890abcd",
       lastSync: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
     },
-  ]
+  ])
+
+  const [showApiKey, setShowApiKey] = useState<Record<string, boolean>>({})
+  const [openDialog, setOpenDialog] = useState(false)
+  const [newIntegration, setNewIntegration] = useState({
+    name: "",
+    description: "",
+    category: "",
+    apiKey: "",
+    logo: "🔌",
+  })
 
   const categories = [...new Set(integrations.map((i) => i.category))]
 
   const handleToggle = (id: string) => {
-    toast.success(`Integración ${id} actualizada`)
+    setIntegrations((prev) =>
+      prev.map((integration) => {
+        if (integration.id === id) {
+          const newEnabled = !integration.enabled
+          const newStatus = newEnabled ? "active" : "inactive"
+          
+          toast.success(
+            newEnabled
+              ? `✅ Integración "${integration.name}" activada correctamente`
+              : `⏸️ Integración "${integration.name}" desactivada`,
+            {
+              description: newEnabled
+                ? "La integración está ahora activa y operativa"
+                : "La integración ha sido pausada temporalmente",
+            }
+          )
+          
+          return {
+            ...integration,
+            enabled: newEnabled,
+            status: newStatus as "active" | "inactive" | "error",
+          }
+        }
+        return integration
+      })
+    )
+  }
+
+  const handleCopyApiKey = (apiKey: string, name: string) => {
+    navigator.clipboard.writeText(apiKey)
+    toast.success(`🔑 API Key copiada`, {
+      description: `La API Key de ${name} se ha copiado al portapapeles`,
+    })
+  }
+
+  const toggleShowApiKey = (id: string) => {
+    setShowApiKey((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  const handleAddIntegration = () => {
+    if (!newIntegration.name || !newIntegration.category || !newIntegration.apiKey) {
+      toast.error("❌ Campos requeridos", {
+        description: "Por favor completa todos los campos obligatorios",
+      })
+      return
+    }
+
+    const integration: Integration = {
+      id: newIntegration.name.toLowerCase().replace(/\s+/g, "-"),
+      name: newIntegration.name,
+      description: newIntegration.description,
+      category: newIntegration.category,
+      status: "active",
+      enabled: true,
+      logo: newIntegration.logo,
+      apiKey: newIntegration.apiKey,
+      lastSync: new Date().toISOString(),
+    }
+
+    setIntegrations((prev) => [...prev, integration])
+    setOpenDialog(false)
+    setNewIntegration({
+      name: "",
+      description: "",
+      category: "",
+      apiKey: "",
+      logo: "🔌",
+    })
+
+    toast.success("✨ Nueva integración agregada", {
+      description: `${newIntegration.name} se ha conectado correctamente`,
+    })
   }
 
   const handleConfigure = (id: string) => {
@@ -190,7 +290,7 @@ export default function IntegracionesPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -206,7 +306,7 @@ export default function IntegracionesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -222,7 +322,7 @@ export default function IntegracionesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -238,7 +338,7 @@ export default function IntegracionesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -272,7 +372,7 @@ export default function IntegracionesPage() {
                 {categoryIntegrations.map((integration) => (
                   <div
                     key={integration.id}
-                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -306,13 +406,30 @@ export default function IntegracionesPage() {
                         <Label className="text-xs">API Key</Label>
                         <div className="flex items-center gap-2 mt-1">
                           <Input
-                            type="password"
+                            type={showApiKey[integration.id] ? "text" : "password"}
                             value={integration.apiKey}
                             readOnly
-                            className="flex-1 text-xs"
+                            className="flex-1 text-xs font-mono"
                           />
-                          <Button variant="outline" size="sm">
-                            <Key className="h-4 w-4" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleShowApiKey(integration.id)}
+                            title={showApiKey[integration.id] ? "Ocultar API Key" : "Mostrar API Key"}
+                          >
+                            {showApiKey[integration.id] ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCopyApiKey(integration.apiKey!, integration.name)}
+                            title="Copiar API Key"
+                          >
+                            <Copy className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
@@ -362,12 +479,118 @@ export default function IntegracionesPage() {
                 Conectar Nuevo Servicio
               </h4>
               <p className="text-sm text-gray-600 mb-4">
-                Explora el marketplace de integraciones disponibles
+                Configura una nueva integración con servicios externos
               </p>
-              <Button style={{ backgroundColor: "#0095A9" }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Explorar Integraciones
-              </Button>
+              <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                <DialogTrigger asChild>
+                  <Button style={{ backgroundColor: "#0095A9" }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nueva Integración
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Agregar Nueva Integración</DialogTitle>
+                    <DialogDescription>
+                      Completa la información para conectar un nuevo servicio externo
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nombre del Servicio *</Label>
+                      <Input
+                        id="name"
+                        placeholder="Ej: PayPal, Google Analytics"
+                        value={newIntegration.name}
+                        onChange={(e) =>
+                          setNewIntegration({ ...newIntegration, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Descripción</Label>
+                      <Input
+                        id="description"
+                        placeholder="Describe el propósito de esta integración"
+                        value={newIntegration.description}
+                        onChange={(e) =>
+                          setNewIntegration({ ...newIntegration, description: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="category">Categoría *</Label>
+                      <Select
+                        value={newIntegration.category}
+                        onValueChange={(value) =>
+                          setNewIntegration({ ...newIntegration, category: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una categoría" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pagos">Pagos</SelectItem>
+                          <SelectItem value="Comunicaciones">Comunicaciones</SelectItem>
+                          <SelectItem value="Infraestructura">Infraestructura</SelectItem>
+                          <SelectItem value="Finanzas">Finanzas</SelectItem>
+                          <SelectItem value="Documentación">Documentación</SelectItem>
+                          <SelectItem value="Análisis">Análisis</SelectItem>
+                          <SelectItem value="Seguridad">Seguridad</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="apiKey">API Key *</Label>
+                      <Input
+                        id="apiKey"
+                        type="text"
+                        placeholder="Ingresa la clave API del servicio"
+                        value={newIntegration.apiKey}
+                        onChange={(e) =>
+                          setNewIntegration({ ...newIntegration, apiKey: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="logo">Emoji/Icono</Label>
+                      <Input
+                        id="logo"
+                        placeholder="🔌"
+                        maxLength={2}
+                        value={newIntegration.logo}
+                        onChange={(e) =>
+                          setNewIntegration({ ...newIntegration, logo: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setOpenDialog(false)
+                        setNewIntegration({
+                          name: "",
+                          description: "",
+                          category: "",
+                          apiKey: "",
+                          logo: "🔌",
+                        })
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleAddIntegration}
+                      style={{ backgroundColor: "#0095A9" }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Agregar Integración
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardContent>
