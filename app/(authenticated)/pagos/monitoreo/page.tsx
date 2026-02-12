@@ -1,17 +1,29 @@
 "use client"
 
-import { Activity, DollarSign, CheckCircle, Clock, XCircle, AlertTriangle, TrendingUp } from "lucide-react"
+import { useState } from "react"
+import { Activity, DollarSign, CheckCircle, Clock, XCircle, AlertTriangle, TrendingUp, FileCheck, Building2, CreditCard } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   mockVendorPayments,
   getPaymentsByStatus,
   paymentStatusNames,
   getVendorsStats
 } from "@/lib/mock-data/vendors-data"
+import { toast } from "sonner"
 
 export default function MonitoreoPage() {
+  const [selectedPayment, setSelectedPayment] = useState<any>(null)
+  const [openReceiptDialog, setOpenReceiptDialog] = useState(false)
+
   const stats = getVendorsStats()
 
   const recentPayments = mockVendorPayments.slice(0, 15)
@@ -88,24 +100,32 @@ export default function MonitoreoPage() {
     return { level: "low", label: "Baja", color: "text-gray-600" }
   }
 
+  const handleViewReceipt = (payment: any) => {
+    setSelectedPayment(payment)
+    setOpenReceiptDialog(true)
+  }
+
+  const handlePayNow = (payment: any) => {
+    toast.success("💰 Pago procesado", {
+      description: `Pago de RD$ ${payment.amount.toLocaleString("es-DO")} a ${payment.vendorName} registrado exitosamente`,
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Activity className="h-8 w-8" style={{ color: "#0095A9" }} />
-          <h1 className="text-3xl font-bold text-gray-900">
-            Monitoreo de Pagos
-          </h1>
-        </div>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Monitoreo de Pagos
+        </h1>
+        <p className="text-gray-600 mt-1">
           Seguimiento en tiempo real de pagos a proveedores
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -121,7 +141,7 @@ export default function MonitoreoPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -137,7 +157,7 @@ export default function MonitoreoPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -153,7 +173,7 @@ export default function MonitoreoPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -172,7 +192,7 @@ export default function MonitoreoPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -234,7 +254,7 @@ export default function MonitoreoPage() {
               return (
                 <div
                   key={payment.id}
-                  className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors shadow-sm"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -260,7 +280,11 @@ export default function MonitoreoPage() {
                         <div className="flex items-center gap-4">
                           <span>
                             Vencimiento:{" "}
-                            {new Date(payment.dueDate).toLocaleDateString("es-DO")}
+                            {new Date(payment.dueDate).toLocaleDateString("es-DO", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
                           </span>
                           {payment.status === "pending" && daysUntilDue >= 0 && (
                             <>
@@ -285,7 +309,11 @@ export default function MonitoreoPage() {
                         </div>
                         {payment.paidDate && (
                           <p className="text-green-600">
-                            Pagado: {new Date(payment.paidDate).toLocaleDateString("es-DO")}
+                            Pagado: {new Date(payment.paidDate).toLocaleDateString("es-DO", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
                           </p>
                         )}
                       </div>
@@ -296,11 +324,19 @@ export default function MonitoreoPage() {
                         RD$ {payment.amount.toLocaleString("es-DO")}
                       </p>
                       {payment.status === "pending" || payment.status === "overdue" ? (
-                        <Button size="sm" style={{ backgroundColor: "#0095A9" }}>
+                        <Button 
+                          size="sm" 
+                          style={{ backgroundColor: "#0095A9" }}
+                          onClick={() => handlePayNow(payment)}
+                        >
                           Pagar Ahora
                         </Button>
                       ) : payment.status === "paid" ? (
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewReceipt(payment)}
+                        >
                           Ver Recibo
                         </Button>
                       ) : null}
@@ -388,6 +424,129 @@ export default function MonitoreoPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Receipt Dialog */}
+      <Dialog open={openReceiptDialog} onOpenChange={setOpenReceiptDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Recibo de Pago</DialogTitle>
+            <DialogDescription>
+              Comprobante de transacción completada
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPayment && (
+            <div className="space-y-6 py-4">
+              {/* Receipt Header */}
+              <div className="text-center border-b pb-4">
+                <div className="inline-flex p-3 bg-green-100 rounded-full mb-3">
+                  <FileCheck className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Pago Exitoso</h3>
+                <p className="text-3xl font-bold text-green-600 mt-2">
+                  RD$ {selectedPayment.amount.toLocaleString("es-DO")}
+                </p>
+                <Badge className="bg-green-100 text-green-800 border-0 mt-2">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Pagado
+                </Badge>
+              </div>
+
+              {/* Payment Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-600">Número de Recibo</p>
+                  <p className="font-semibold text-gray-900">{selectedPayment.invoiceNumber}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-600">Fecha de Pago</p>
+                  <p className="font-semibold text-gray-900">
+                    {selectedPayment.paidDate
+                      ? new Date(selectedPayment.paidDate).toLocaleDateString("es-DO", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-600">Proveedor</p>
+                  <p className="font-semibold text-gray-900">{selectedPayment.vendorName}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-600">Método de Pago</p>
+                  <p className="font-semibold text-gray-900">{selectedPayment.paymentMethod}</p>
+                </div>
+              </div>
+
+              {/* Payment Info */}
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Concepto</span>
+                  <span className="text-sm font-medium text-gray-900">{selectedPayment.concept}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Factura</span>
+                  <span className="text-sm font-medium text-gray-900">{selectedPayment.invoiceNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Fecha de Vencimiento</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {new Date(selectedPayment.dueDate).toLocaleDateString("es-DO", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="border-t pt-3 flex justify-between">
+                  <span className="text-base font-semibold text-gray-900">Total Pagado</span>
+                  <span className="text-base font-bold text-green-600">
+                    RD$ {selectedPayment.amount.toLocaleString("es-DO")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Receipt Footer */}
+              <div className="border-t pt-4 text-center text-xs text-gray-500">
+                <p>Este es un comprobante digital generado automáticamente</p>
+                <p className="mt-1">
+                  Generado el {new Date().toLocaleDateString("es-DO", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })} a las {new Date().toLocaleTimeString("es-DO", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setOpenReceiptDialog(false)}
+                  className="w-full sm:w-auto"
+                >
+                  Cerrar
+                </Button>
+                <Button
+                  style={{ backgroundColor: "#0095A9" }}
+                  onClick={() => {
+                    toast.success("📄 Recibo descargado", {
+                      description: "El recibo se ha descargado exitosamente",
+                    })
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  Descargar PDF
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
