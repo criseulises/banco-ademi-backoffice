@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import { colors } from "@/lib/colors"
 import { Bell, LogOut, User } from "lucide-react"
+import Image from "next/image"
 
 interface HeaderProps {
   notificationCount?: number
@@ -24,8 +25,14 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
           {/* Logo */}
           <div className="flex items-center">
             <div className="text-white">
-              <div className="text-2xl font-bold">BANCO ADEMI</div>
-              <div className="text-xs opacity-90">Backoffice</div>
+              <Image
+                src="/logo/logo-white.png"
+                alt="Banco ADEMI"
+                width={120}
+                height={40}
+                priority
+                className="object-contain"
+              />
             </div>
           </div>
 
@@ -43,10 +50,10 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
                     {user.role === "admin"
                       ? "Administrador"
                       : user.role === "compliance_officer"
-                      ? "Compliance"
-                      : user.role === "operations_manager"
-                      ? "Operaciones"
-                      : "Soporte"}
+                        ? "Compliance"
+                        : user.role === "operations_manager"
+                          ? "Operaciones"
+                          : "Soporte"}
                   </div>
                 </div>
               </div>
@@ -73,11 +80,11 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="flex flex-col items-center gap-1 group hover:opacity-80 transition-opacity"
+              className="flex flex-col items-center gap-1 group hover:text-red-500 transition-colors"
               aria-label="Salir"
             >
-              <LogOut size={20} className="text-white" />
-              <span className="text-white text-xs font-medium">Salir</span>
+              <LogOut size={20} className="text-white group-hover:text-red-500" />
+              <span className="text-white group-hover:text-red-500 text-xs font-medium">Salir</span>
             </button>
           </div>
         </div>
